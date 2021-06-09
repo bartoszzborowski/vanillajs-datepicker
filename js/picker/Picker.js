@@ -5,6 +5,7 @@ import {registerListeners} from '../lib/event.js';
 import pickerTemplate from './templates/pickerTemplate.js';
 import DaysView from './views/DaysView.js';
 import MonthsView from './views/MonthsView.js';
+import QuarterView from './views/QuarterView.js';
 import YearsView from './views/YearsView.js';
 import {triggerDatepickerEvent} from '../events/functions.js';
 import {
@@ -97,6 +98,8 @@ function setViewDate(picker, newDate) {
       return newDate < first || newDate > last;
     case 1:
       return viewYear !== year;
+    case 4:
+      return viewYear !== year;
     default:
       return viewYear < first || viewYear > last;
   }
@@ -151,6 +154,7 @@ export default class Picker {
       new MonthsView(this),
       new YearsView(this, {id: 2, name: 'years', cellClass: 'year', step: 1}),
       new YearsView(this, {id: 3, name: 'decades', cellClass: 'decade', step: 10}),
+      new QuarterView(this, {id: 4})
     ];
     this.currentView = this.views[datepicker.config.startView];
 

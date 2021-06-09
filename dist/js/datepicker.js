@@ -64,90 +64,101 @@ var Datepicker = (function () {
   }
 
   function stripTime(timeValue) {
-    return new Date(timeValue).setHours(0, 0, 0, 0);
+      return new Date(timeValue).setHours(0, 0, 0, 0);
   }
 
   function today() {
-    return new Date().setHours(0, 0, 0, 0);
+      return new Date().setHours(0, 0, 0, 0);
   }
 
   // Get the time value of the start of given date or year, month and day
   function dateValue(...args) {
-    switch (args.length) {
-      case 0:
-        return today();
-      case 1:
-        return stripTime(args[0]);
-    }
+      switch (args.length) {
+          case 0:
+              return today();
+          case 1:
+              return stripTime(args[0]);
+      }
 
-    // use setFullYear() to keep 2-digit year from being mapped to 1900-1999
-    const newDate = new Date(0);
-    newDate.setFullYear(...args);
-    return newDate.setHours(0, 0, 0, 0);
+      // use setFullYear() to keep 2-digit year from being mapped to 1900-1999
+      const newDate = new Date(0);
+      newDate.setFullYear(...args);
+      return newDate.setHours(0, 0, 0, 0);
+  }
+
+  function dateQuarterValue(year, quarter) {
+      const newDate = new Date(Date.UTC(year, 0));
+      newDate.setMonth(Math.ceil(quarter * 3));
+      return newDate.setHours(12, 0, 0, 0)
+  }
+
+  function getQuarterFromDate(date) {
+      const month = date.getMonth() + 1;
+      return (Math.ceil(month / 3));
   }
 
   function addDays(date, amount) {
-    const newDate = new Date(date);
-    return newDate.setDate(newDate.getDate() + amount);
+      const newDate = new Date(date);
+      return newDate.setDate(newDate.getDate() + amount);
   }
 
   function addWeeks(date, amount) {
-    return addDays(date, amount * 7);
+      return addDays(date, amount * 7);
   }
 
   function addMonths(date, amount) {
-    // If the day of the date is not in the new month, the last day of the new
-    // month will be returned. e.g. Jan 31 + 1 month → Feb 28 (not Mar 03)
-    const newDate = new Date(date);
-    const monthsToSet = newDate.getMonth() + amount;
-    let expectedMonth = monthsToSet % 12;
-    if (expectedMonth < 0) {
-      expectedMonth += 12;
-    }
+      // If the day of the date is not in the new month, the last day of the new
+      // month will be returned. e.g. Jan 31 + 1 month → Feb 28 (not Mar 03)
+      const newDate = new Date(date);
+      const monthsToSet = newDate.getMonth() + amount;
+      let expectedMonth = monthsToSet % 12;
+      if (expectedMonth < 0) {
+          expectedMonth += 12;
+      }
 
-    const time = newDate.setMonth(monthsToSet);
-    return newDate.getMonth() !== expectedMonth ? newDate.setDate(0) : time;
+      const time = newDate.setMonth(monthsToSet);
+      return newDate.getMonth() !== expectedMonth ? newDate.setDate(0) : time;
   }
 
   function addYears(date, amount) {
-    // If the date is Feb 29 and the new year is not a leap year, Feb 28 of the
-    // new year will be returned.
-    const newDate = new Date(date);
-    const expectedMonth = newDate.getMonth();
-    const time = newDate.setFullYear(newDate.getFullYear() + amount);
-    return expectedMonth === 1 && newDate.getMonth() === 2 ? newDate.setDate(0) : time;
+      // If the date is Feb 29 and the new year is not a leap year, Feb 28 of the
+      // new year will be returned.
+      const newDate = new Date(date);
+      const expectedMonth = newDate.getMonth();
+      const time = newDate.setFullYear(newDate.getFullYear() + amount);
+      return expectedMonth === 1 && newDate.getMonth() === 2 ? newDate.setDate(0) : time;
   }
 
   // Calculate the distance bettwen 2 days of the week
   function dayDiff(day, from) {
-    return (day - from + 7) % 7;
+      return (day - from + 7) % 7;
   }
 
   // Get the date of the specified day of the week of given base date
   function dayOfTheWeekOf(baseDate, dayOfWeek, weekStart = 0) {
-    const baseDay = new Date(baseDate).getDay();
-    return addDays(baseDate, dayDiff(dayOfWeek, weekStart) - dayDiff(baseDay, weekStart));
+      const baseDay = new Date(baseDate).getDay();
+      return addDays(baseDate, dayDiff(dayOfWeek, weekStart) - dayDiff(baseDay, weekStart));
   }
 
   // Get the ISO week of a date
   function getWeek(date) {
-    // start of ISO week is Monday
-    const thuOfTheWeek = dayOfTheWeekOf(date, 4, 1);
-    // 1st week == the week where the 4th of January is in
-    const firstThu = dayOfTheWeekOf(new Date(thuOfTheWeek).setMonth(0, 4), 4, 1);
-    return Math.round((thuOfTheWeek - firstThu) / 604800000) + 1;
+      // start of ISO week is Monday
+      const thuOfTheWeek = dayOfTheWeekOf(date, 4, 1);
+      // 1st week == the week where the 4th of January is in
+      const firstThu = dayOfTheWeekOf(new Date(thuOfTheWeek).setMonth(0, 4), 4, 1);
+      return Math.round((thuOfTheWeek - firstThu) / 604800000) + 1;
   }
 
   // Get the start year of the period of years that includes given date
   // years: length of the year period
   function startOfYearPeriod(date, years) {
-    /* @see https://en.wikipedia.org/wiki/Year_zero#ISO_8601 */
-    const year = new Date(date).getFullYear();
-    return Math.floor(year / years) * years;
+      /* @see https://en.wikipedia.org/wiki/Year_zero#ISO_8601 */
+      const year = new Date(date).getFullYear();
+      return Math.floor(year / years) * years;
   }
 
   // pattern for format parts
-  const reFormatTokens = /dd?|DD?|mm?|MM?|yy?(?:yy)?/;
+  const reFormatTokens = /dd?|DD?|mm?|MM?|yy?(?:yy)?|qq?|qqqq?|QQ?/;
   // pattern for non date parts
   const reNonDateParts = /[\s!-/:-@[-`{-~年月日]+/;
   // cache for persed formats
@@ -223,6 +234,15 @@ var Datepicker = (function () {
     yyyy(date) {
       return padZero(date.getFullYear(), 4);
     },
+    qq(date) {
+      return getQuarterFromDate(date)
+    },
+    qqqq(date) {
+      return padZero(getQuarterFromDate(date), 2)
+    },
+    QQ(date, locale) {
+      return locale.quarters[getQuarterFromDate(date) - 1]
+    }
   };
 
   // get month index in normal range (0 - 11) from any number
@@ -319,7 +339,6 @@ var Datepicker = (function () {
     if (isNaN(date) || (!date && date !== 0)) {
       return '';
     }
-
     const dateObj = typeof date === 'number' ? new Date(date) : date;
 
     if (format.toDisplay) {
@@ -406,6 +425,7 @@ var Datepicker = (function () {
       daysMin: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
       months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
       monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      quarters: ["Q1", "Q2", "Q3", "Q4"],
       today: "Today",
       clear: "Clear",
       titleFormat: "MM y"
@@ -523,7 +543,7 @@ var Datepicker = (function () {
   }
 
   // Validate viewId. if invalid, fallback to the original value
-  function validateViewId(value, origValue, max = 3) {
+  function validateViewId(value, origValue, max = 5) {
     const viewId = parseInt(value, 10);
     return viewId >= 0 && viewId <= max ? viewId : origValue;
   }
@@ -1262,6 +1282,157 @@ var Datepicker = (function () {
     }
   }
 
+  class QuarterView extends View {
+    constructor(picker) {
+      super(picker, {
+        id: 4,
+        name: 'quarter',
+        cellClass: 'quarter',
+      });
+    }
+
+    init(options, onConstruction = true) {
+      if (onConstruction) {
+        this.grid = this.element;
+        this.element.classList.add('quarter', 'datepicker-grid');
+        this.grid.appendChild(parseHTML(createTagRepeat('span', 4, {'data-quarter': ix => ix})));
+      }
+      super.init(options);
+    }
+
+    setOptions(options) {
+      if (options.locale) {
+        this.quarters = options.locale.quarters;
+      }
+      if (hasProperty(options, 'minDate')) {
+        if (options.minDate === undefined) {
+          this.minYear = this.minMonth = this.minDate = undefined;
+        } else {
+          const minDateObj = new Date(options.minDate);
+          this.minYear = minDateObj.getFullYear();
+          this.minMonth = minDateObj.getMonth();
+          this.minDate = minDateObj.setDate(1);
+        }
+      }
+      if (hasProperty(options, 'maxDate')) {
+        if (options.maxDate === undefined) {
+          this.maxYear = this.maxMonth = this.maxDate = undefined;
+        } else {
+          const maxDateObj = new Date(options.maxDate);
+          this.maxYear = maxDateObj.getFullYear();
+          this.maxMonth = maxDateObj.getMonth();
+          this.maxDate = dateValue(this.maxYear, this.maxMonth + 1, 0);
+        }
+      }
+      if (options.beforeShowMonth !== undefined) {
+        this.beforeShow = typeof options.beforeShowMonth === 'function'
+            ? options.beforeShowMonth
+            : undefined;
+      }
+    }
+
+    // Update view's settings to reflect the viewDate set on the picker
+    updateFocus() {
+      const viewDate = new Date(this.picker.viewDate);
+      this.year = viewDate.getFullYear();
+      this.quarter = getQuarterFromDate(viewDate);
+      this.focused = getQuarterFromDate(viewDate) - 1;
+    }
+
+    // Update view's settings to reflect the selected dates
+    updateSelection() {
+      const {dates} = this.picker.datepicker;
+      this.selected = dates.reduce((selected, timeValue) => {
+        const date = new Date(timeValue);
+        const year = date.getFullYear();
+        const quarter = getQuarterFromDate(date);
+        if (selected[year] === undefined) {
+          selected[year] = [quarter - 1];
+        } else {
+          pushUnique(selected[year], quarter - 1);
+        }
+        return selected;
+      }, {});
+
+    }
+
+    // Update the entire view UI
+    render() {
+      // refresh disabled months on every render in order to clear the ones added
+      // by beforeShow hook at previous render
+      this.disabled = [];
+      this.picker.setViewSwitchLabel(this.year);
+      this.picker.setPrevBtnDisabled(this.year <= this.minYear);
+      this.picker.setNextBtnDisabled(this.year >= this.maxYear);
+
+      const selected = this.selected[this.year] || [];
+      const yrOutOfRange = this.year < this.minYear || this.year > this.maxYear;
+      const isMinYear = this.year === this.minYear;
+      const isMaxYear = this.year === this.maxYear;
+
+      Array.from(this.grid.children).forEach((el, index) => {
+        const classList = el.classList;
+        const date = dateQuarterValue(this.year, index);
+
+        el.className = `datepicker-cell ${this.cellClass}`;
+
+        if (this.isMinView) {
+          el.dataset.date = date;
+        }
+
+        // reset text on every render to clear the custom content set
+        // by beforeShow hook at previous render
+        el.textContent = this.quarters[index];
+
+        if (
+            yrOutOfRange
+            || isMinYear && index < this.minMonth
+            || isMaxYear && index > this.maxMonth
+        ) {
+          classList.add('disabled');
+        }
+
+        if (selected.includes(index)) {
+          classList.add('selected');
+        }
+        if (index === this.focused) {
+          classList.add('focused');
+        }
+
+        if (this.beforeShow) {
+          this.performBeforeHook(el, index, date);
+        }
+      });
+    }
+
+    // Update the view UI by applying the changes of selected and focused items
+    refresh() {
+      const selected = this.selected[this.year] || [];
+      this.grid
+          .querySelectorAll('.selected, .focused')
+          .forEach((el) => {
+            el.classList.remove('selected', 'focused');
+          });
+      Array.from(this.grid.children).forEach((el, index) => {
+        const classList = el.classList;
+        if (selected.includes(index)) {
+          classList.add('selected');
+        }
+        if (index === this.focused) {
+          classList.add('focused');
+        }
+      });
+    }
+
+    // Update the view UI by applying the change of focused item
+    refreshFocus() {
+      this.grid.querySelectorAll('.focused').forEach((el) => {
+        el.classList.remove('focused');
+      });
+      this.grid.children[this.focused].classList.add('focused');
+    }
+  }
+
   function toTitleCase(word) {
     return [...word].reduce((str, ch, ix) => str += ix ? ch : ch.toUpperCase(), '');
   }
@@ -1448,10 +1619,14 @@ var Datepicker = (function () {
       case 1:
         newViewDate = addYears(viewDate, direction);
         break;
+      case 4:
+        newViewDate = addYears(viewDate, direction);
+        break;
       default:
         newViewDate = addYears(viewDate, direction * currentView.navStep);
     }
     newViewDate = limitToRange(newViewDate, minDate, maxDate);
+    // debugger;
     datepicker.picker.changeFocus(newViewDate).render();
   }
 
@@ -1519,6 +1694,7 @@ var Datepicker = (function () {
   // For the picker's main block to delegete the events from `datepicker-cell`s
   function onClickView(datepicker, ev) {
     const target = findElementInEventPath(ev, '.datepicker-cell');
+    // debugger;
     if (!target || target.classList.contains('disabled')) {
       return;
     }
@@ -1619,6 +1795,8 @@ var Datepicker = (function () {
         return newDate < first || newDate > last;
       case 1:
         return viewYear !== year;
+      case 4:
+        return viewYear !== year;
       default:
         return viewYear < first || viewYear > last;
     }
@@ -1673,6 +1851,7 @@ var Datepicker = (function () {
         new MonthsView(this),
         new YearsView(this, {id: 2, name: 'years', cellClass: 'year', step: 1}),
         new YearsView(this, {id: 3, name: 'decades', cellClass: 'decade', step: 10}),
+        new QuarterView(this, {id: 4})
       ];
       this.currentView = this.views[datepicker.config.startView];
 
@@ -2100,6 +2279,8 @@ var Datepicker = (function () {
           date = rangeEnd
             ? dt.setMonth(dt.getMonth() + 1, 0)
             : dt.setDate(1);
+        } else if (config.pickLevel === 4) {
+          date = dt;
         } else {
           date = rangeEnd
             ? dt.setFullYear(dt.getFullYear() + 1, 0, 0)
@@ -2138,6 +2319,7 @@ var Datepicker = (function () {
   // modes: 1: input only, 2, picker only, 3 both
   function refreshUI(datepicker, mode = 3, quickRender = true) {
     const {config, picker, inputField} = datepicker;
+    console.log(datepicker.dates);
     if (mode & 2) {
       const newView = picker.active ? config.pickLevel : config.startView;
       picker.update().changeView(newView).render(quickRender);
@@ -2162,6 +2344,7 @@ var Datepicker = (function () {
     if (!newDates) {
       return;
     }
+    // debugger;
     if (newDates.toString() !== datepicker.dates.toString()) {
       datepicker.dates = newDates;
       refreshUI(datepicker, render ? 3 : 1);

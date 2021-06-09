@@ -23,10 +23,14 @@ export function goToPrevOrNext(datepicker, direction) {
     case 1:
       newViewDate = addYears(viewDate, direction);
       break;
+    case 4:
+      newViewDate = addYears(viewDate, direction);
+      break;
     default:
       newViewDate = addYears(viewDate, direction * currentView.navStep);
   }
   newViewDate = limitToRange(newViewDate, minDate, maxDate);
+  // debugger;
   datepicker.picker.changeFocus(newViewDate).render();
 }
 

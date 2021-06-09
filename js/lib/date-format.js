@@ -1,8 +1,9 @@
-import {stripTime, today} from './date.js';
+import {getQuarterFromDate, stripTime, today} from './date.js';
 import {lastItemOf} from './utils.js';
+import de from "../i18n/locales/de";
 
 // pattern for format parts
-export const reFormatTokens = /dd?|DD?|mm?|MM?|yy?(?:yy)?/;
+export const reFormatTokens = /dd?|DD?|mm?|MM?|yy?(?:yy)?|qq?|qqqq?|QQ?/;
 // pattern for non date parts
 export const reNonDateParts = /[\s!-/:-@[-`{-~年月日]+/;
 // cache for persed formats
@@ -78,6 +79,15 @@ const formatFns = {
   yyyy(date) {
     return padZero(date.getFullYear(), 4);
   },
+  qq(date) {
+    return getQuarterFromDate(date)
+  },
+  qqqq(date) {
+    return padZero(getQuarterFromDate(date), 2)
+  },
+  QQ(date, locale) {
+    return locale.quarters[getQuarterFromDate(date) - 1]
+  }
 };
 
 // get month index in normal range (0 - 11) from any number
@@ -174,7 +184,6 @@ export function formatDate(date, format, locale) {
   if (isNaN(date) || (!date && date !== 0)) {
     return '';
   }
-
   const dateObj = typeof date === 'number' ? new Date(date) : date;
 
   if (format.toDisplay) {

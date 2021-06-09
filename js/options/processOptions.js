@@ -28,7 +28,7 @@ function validateDate(value, format, locale, origValue) {
 }
 
 // Validate viewId. if invalid, fallback to the original value
-function validateViewId(value, origValue, max = 3) {
+function validateViewId(value, origValue, max = 5) {
   const viewId = parseInt(value, 10);
   return viewId >= 0 && viewId <= max ? viewId : origValue;
 }

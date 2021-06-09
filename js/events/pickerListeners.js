@@ -1,6 +1,7 @@
 import {today, addMonths, addYears} from '../lib/date.js';
 import {findElementInEventPath} from '../lib/event.js';
 import {goToPrevOrNext, switchView} from './functions.js';
+import de from "../i18n/locales/de";
 
 function goToSelectedMonthOrYear(datepicker, selection) {
   const picker = datepicker.picker;
@@ -49,6 +50,7 @@ export function onClickNextBtn(datepicker) {
 // For the picker's main block to delegete the events from `datepicker-cell`s
 export function onClickView(datepicker, ev) {
   const target = findElementInEventPath(ev, '.datepicker-cell');
+  // debugger;
   if (!target || target.classList.contains('disabled')) {
     return;
   }
