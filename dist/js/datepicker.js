@@ -777,7 +777,7 @@ var Datepicker = (function () {
     return config;
   }
 
-  const pickerTemplate = optimizeTemplateHTML(`<div class="datepicker">
+  const pickerTemplate = optimizeTemplateHTML(`<div class="v-datepicker">
   <div class="datepicker-picker">
     <div class="datepicker-header">
       <div class="datepicker-title"></div>
@@ -963,7 +963,6 @@ var Datepicker = (function () {
       const viewMonth = viewDate.getMonth();
       const firstOfMonth = dateValue(viewYear, viewMonth, 1);
       const start = dayOfTheWeekOf(firstOfMonth, this.weekStart, this.weekStart);
-
       this.first = firstOfMonth;
       this.last = dateValue(viewYear, viewMonth + 1, 0);
       this.start = start;
@@ -1089,6 +1088,164 @@ var Datepicker = (function () {
       });
       this.grid.children[index].classList.add('focused');
     }
+  }
+
+  const weekTemplate = optimizeTemplateHTML(`<div class="days">
+  <div class="days-of-week">${createTagRepeat('span', 7, {class: 'dow'})}</div>
+  <div class="datepicker-grid">
+    <div class="week-panel-row">${createTagRepeat('span', 7)}</div>
+    <div class="week-panel-row">${createTagRepeat('span', 7)}</div>
+    <div class="week-panel-row">${createTagRepeat('span', 7)}</div>
+    <div class="week-panel-row">${createTagRepeat('span', 7)}</div>
+    <div class="week-panel-row">${createTagRepeat('span', 7)}</div>
+    <div class="week-panel-row">${createTagRepeat('span', 7)}</div>
+  </div>
+</div>`);
+
+  class WeekView extends View {
+      constructor(picker) {
+          super(picker, {
+              id: 5,
+              name: 'weeks',
+              cellClass: 'week-list',
+          });
+      }
+
+      init(options, onConstruction = true) {
+          if (onConstruction) {
+              const inner = parseHTML(weekTemplate).firstChild;
+              this.dow = inner.firstChild;
+              this.grid = inner.lastChild;
+              this.element.appendChild(inner);
+          }
+          super.init(options);
+      }
+
+      setOptions(options) {
+          let updateDOW;
+          if (options.weekStart !== undefined) {
+              this.weekStart = options.weekStart;
+              this.weekEnd = options.weekEnd;
+              updateDOW = true;
+          }
+          if (options.datesDisabled) {
+              this.datesDisabled = options.datesDisabled;
+          }
+          if (options.daysOfWeekDisabled) {
+              this.daysOfWeekDisabled = options.daysOfWeekDisabled;
+              updateDOW = true;
+          }
+          if (options.locale) {
+              const locale = this.locale = options.locale;
+              this.dayNames = locale.daysMin;
+              this.switchLabelFormat = locale.titleFormat;
+              updateDOW = true;
+          }
+
+          // update days-of-week when locale, daysOfweekDisabled or weekStart is changed
+          if (updateDOW) {
+              Array.from(this.dow.children).forEach((el, index) => {
+                  const dow = (this.weekStart + index) % 7;
+                  el.textContent = this.dayNames[dow];
+                  el.className = this.daysOfWeekDisabled.includes(dow) ? 'dow disabled' : 'dow';
+              });
+          }
+      }
+
+      // Apply update on the focused date to view's settings
+      updateFocus() {
+          const viewDate = new Date(this.picker.viewDate);
+          const viewYear = viewDate.getFullYear();
+          const viewMonth = viewDate.getMonth();
+          const firstOfMonth = dateValue(viewYear, viewMonth, 1);
+          const start = dayOfTheWeekOf(firstOfMonth, this.weekStart, this.weekStart);
+          this.first = firstOfMonth;
+          this.last = dateValue(viewYear, viewMonth + 1, 0);
+          this.start = start;
+          this.focused = getWeek(viewDate);
+          this.current = viewDate;
+      }
+
+      // Apply update on the selected dates to view's settings
+      updateSelection() {
+          const {dates} = this.picker.datepicker;
+          this.selected = dates;
+      }
+
+      // Update the entire view UI
+      render() {
+          this.grid
+              .querySelectorAll('.selected, .focused')
+              .forEach((el) => {
+                  el.classList.remove('selected', 'focused');
+              });
+          // update today marker on ever render
+          this.today = this.todayHighlight ? today() : undefined;
+          // refresh disabled dates on every render in order to clear the ones added
+          // by beforeShow hook at previous render
+          this.disabled = [...this.datesDisabled];
+          const switchLabel = formatDate(this.current, this.switchLabelFormat, this.locale);
+          this.picker.setViewSwitchLabel(switchLabel);
+          this.picker.setPrevBtnDisabled(this.first <= this.minDate);
+          this.picker.setNextBtnDisabled(this.last >= this.maxDate);
+
+          let tempIndex = 0;
+          const startOfWeek = dayOfTheWeekOf(this.first, 1, 1);
+
+          Array.from(this.grid.children).forEach((el, index) => {
+              const weekDate = addWeeks(startOfWeek, index);
+              el.dataset.date = weekDate.toString();
+
+              if (getWeek(weekDate) === this.focused) {
+                  el.classList.add('focused');
+              }
+
+              if (this.selected.includes(weekDate)) {
+                  el.classList.add('selected');
+              }
+
+              Array.from(el.children).forEach((item, week) => {
+                  const classList = item.classList;
+                  const current = addDays(this.start, tempIndex);
+                  const date = new Date(current);
+                  date.getDay();
+                  item.className = `datepicker-cell ${this.cellClass}`;
+                  item.dataset.date = current;
+                  item.textContent = date.getDate();
+
+                  if (current < this.first) {
+                      classList.add('prev');
+                  } else if (current > this.last) {
+                      classList.add('next');
+                  }
+                  tempIndex++;
+              });
+          });
+      }
+
+      // Update the view UI by applying the changes of selected and focused items
+      refresh() {
+          const selected = this.selected || [];
+          this.grid
+              .querySelectorAll('.selected, .focused')
+              .forEach((el) => {
+                  el.classList.remove('selected', 'focused');
+              });
+
+          Array.from(this.grid.children).forEach((el, index) => {
+              const classList = el.classList;
+              if (selected.includes(parseInt(el.dataset.date))) {
+                  classList.add('selected');
+              }
+              if (getWeek(el.dataset.date) === this.focused) {
+                  classList.add('focused');
+              }
+          });
+      }
+
+      // Update the view UI by applying the change of focused item
+      refreshFocus() {
+      }
   }
 
   function computeMonthRange(range, thisYear) {
@@ -1622,11 +1779,13 @@ var Datepicker = (function () {
       case 4:
         newViewDate = addYears(viewDate, direction);
         break;
+      case 5:
+        newViewDate = addMonths(viewDate, direction);
+        break;
       default:
         newViewDate = addYears(viewDate, direction * currentView.navStep);
     }
     newViewDate = limitToRange(newViewDate, minDate, maxDate);
-    // debugger;
     datepicker.picker.changeFocus(newViewDate).render();
   }
 
@@ -1693,13 +1852,21 @@ var Datepicker = (function () {
 
   // For the picker's main block to delegete the events from `datepicker-cell`s
   function onClickView(datepicker, ev) {
-    const target = findElementInEventPath(ev, '.datepicker-cell');
-    // debugger;
+    const {id, isMinView} = datepicker.picker.currentView;
+    let target = undefined;
+    switch (id) {
+      case 5:
+        target = findElementInEventPath(ev, '.week-panel-row');
+        break;
+      default:
+        target = findElementInEventPath(ev, '.datepicker-cell');
+        break
+    }
+
     if (!target || target.classList.contains('disabled')) {
       return;
     }
 
-    const {id, isMinView} = datepicker.picker.currentView;
     if (isMinView) {
       datepicker.setDate(Number(target.dataset.date));
     } else if (id === 1) {
@@ -1797,6 +1964,8 @@ var Datepicker = (function () {
         return viewYear !== year;
       case 4:
         return viewYear !== year;
+      case 5:
+        return newDate < first || newDate > last;
       default:
         return viewYear < first || viewYear > last;
     }
@@ -1851,7 +2020,8 @@ var Datepicker = (function () {
         new MonthsView(this),
         new YearsView(this, {id: 2, name: 'years', cellClass: 'year', step: 1}),
         new YearsView(this, {id: 3, name: 'decades', cellClass: 'decade', step: 10}),
-        new QuarterView(this, {id: 4})
+        new QuarterView(this),
+        new WeekView(this)
       ];
       this.currentView = this.views[datepicker.config.startView];
 
@@ -2279,8 +2449,8 @@ var Datepicker = (function () {
           date = rangeEnd
             ? dt.setMonth(dt.getMonth() + 1, 0)
             : dt.setDate(1);
-        } else if (config.pickLevel === 4) {
-          date = dt;
+        } else if (config.pickLevel === 4 || config.pickLevel === 5) {
+          date = dt.getTime();
         } else {
           date = rangeEnd
             ? dt.setFullYear(dt.getFullYear() + 1, 0, 0)
@@ -2319,7 +2489,7 @@ var Datepicker = (function () {
   // modes: 1: input only, 2, picker only, 3 both
   function refreshUI(datepicker, mode = 3, quickRender = true) {
     const {config, picker, inputField} = datepicker;
-    console.log(datepicker.dates);
+
     if (mode & 2) {
       const newView = picker.active ? config.pickLevel : config.startView;
       picker.update().changeView(newView).render(quickRender);
@@ -2344,7 +2514,7 @@ var Datepicker = (function () {
     if (!newDates) {
       return;
     }
-    // debugger;
+
     if (newDates.toString() !== datepicker.dates.toString()) {
       datepicker.dates = newDates;
       refreshUI(datepicker, render ? 3 : 1);

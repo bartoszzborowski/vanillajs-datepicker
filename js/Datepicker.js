@@ -42,8 +42,8 @@ function processInputDates(datepicker, inputDates, clear = false) {
         date = rangeEnd
           ? dt.setMonth(dt.getMonth() + 1, 0)
           : dt.setDate(1);
-      } else if (config.pickLevel === 4) {
-        date = dt;
+      } else if (config.pickLevel === 4 || config.pickLevel === 5) {
+        date = dt.getTime();
       } else {
         date = rangeEnd
           ? dt.setFullYear(dt.getFullYear() + 1, 0, 0)
@@ -82,7 +82,7 @@ function processInputDates(datepicker, inputDates, clear = false) {
 // modes: 1: input only, 2, picker only, 3 both
 function refreshUI(datepicker, mode = 3, quickRender = true) {
   const {config, picker, inputField} = datepicker;
-  console.log(datepicker.dates)
+
   if (mode & 2) {
     const newView = picker.active ? config.pickLevel : config.startView;
     picker.update().changeView(newView).render(quickRender);
@@ -107,7 +107,7 @@ function setDate(datepicker, inputDates, options) {
   if (!newDates) {
     return;
   }
-  // debugger;
+
   if (newDates.toString() !== datepicker.dates.toString()) {
     datepicker.dates = newDates;
     refreshUI(datepicker, render ? 3 : 1);

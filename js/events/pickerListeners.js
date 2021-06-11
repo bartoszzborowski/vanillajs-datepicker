@@ -49,13 +49,21 @@ export function onClickNextBtn(datepicker) {
 
 // For the picker's main block to delegete the events from `datepicker-cell`s
 export function onClickView(datepicker, ev) {
-  const target = findElementInEventPath(ev, '.datepicker-cell');
-  // debugger;
+  const {id, isMinView} = datepicker.picker.currentView;
+  let target = undefined;
+  switch (id) {
+    case 5:
+      target = findElementInEventPath(ev, '.week-panel-row');
+      break;
+    default:
+      target = findElementInEventPath(ev, '.datepicker-cell');
+      break
+  }
+
   if (!target || target.classList.contains('disabled')) {
     return;
   }
 
-  const {id, isMinView} = datepicker.picker.currentView;
   if (isMinView) {
     datepicker.setDate(Number(target.dataset.date));
   } else if (id === 1) {

@@ -4,6 +4,7 @@ import {parseHTML, showElement, hideElement, emptyChildNodes} from '../lib/dom.j
 import {registerListeners} from '../lib/event.js';
 import pickerTemplate from './templates/pickerTemplate.js';
 import DaysView from './views/DaysView.js';
+import WeekView from './views/WeekView.js';
 import MonthsView from './views/MonthsView.js';
 import QuarterView from './views/QuarterView.js';
 import YearsView from './views/YearsView.js';
@@ -17,6 +18,7 @@ import {
   onClickView,
   onClickPicker,
 } from '../events/pickerListeners.js';
+import de from "../i18n/locales/de";
 
 function processPickerOptions(picker, options) {
   if (options.title !== undefined) {
@@ -100,6 +102,8 @@ function setViewDate(picker, newDate) {
       return viewYear !== year;
     case 4:
       return viewYear !== year;
+    case 5:
+      return newDate < first || newDate > last;
     default:
       return viewYear < first || viewYear > last;
   }
@@ -154,7 +158,8 @@ export default class Picker {
       new MonthsView(this),
       new YearsView(this, {id: 2, name: 'years', cellClass: 'year', step: 1}),
       new YearsView(this, {id: 3, name: 'decades', cellClass: 'decade', step: 10}),
-      new QuarterView(this, {id: 4})
+      new QuarterView(this),
+      new WeekView(this)
     ];
     this.currentView = this.views[datepicker.config.startView];
 

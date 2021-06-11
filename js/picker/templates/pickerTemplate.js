@@ -1,6 +1,6 @@
 import {optimizeTemplateHTML} from '../../lib/utils.js';
 
-const pickerTemplate = optimizeTemplateHTML(`<div class="datepicker">
+const pickerTemplate = optimizeTemplateHTML(`<div class="v-datepicker">
   <div class="datepicker-picker">
     <div class="datepicker-header">
       <div class="datepicker-title"></div>

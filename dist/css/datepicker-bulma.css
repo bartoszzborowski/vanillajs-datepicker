@@ -1,8 +1,8 @@
-.datepicker {
+.v-datepicker {
     display: none;
 }
 
-.datepicker.active {
+.v-datepicker.active {
     display: block;
 }
 
@@ -52,7 +52,7 @@
     background-color: whitesmoke;
 }
 
-.datepicker-controls, .datepicker-view, .datepicker-view .days-of-week, .datepicker-grid {
+.datepicker-controls, .datepicker-view, .datepicker-view .days-of-week, .datepicker-grid, .datepicker-grid .week-panel-row {
     display: flex;
 }
 
@@ -68,7 +68,7 @@
     flex-basis: 25%;
 }
 
-.datepicker-view .week, .datepicker-cell {
+.datepicker-view .week-list, .datepicker-view .week, .datepicker-cell {
     height: 2.25rem;
     line-height: 2.25rem;
 }
@@ -136,6 +136,10 @@
     font-weight: 700;
 }
 
+.datepicker-view .week-list {
+    width: 2.25rem;
+}
+
 .datepicker-view .week {
     width: 2.25rem;
     color: #b5b5b5;
@@ -158,7 +162,22 @@
     }
 }
 
-.datepicker-cell:not(.disabled):hover {
+.datepicker-grid .week-panel-row:not(.disabled):not(.selected):hover {
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.datepicker-grid .week-panel-row.focused:not(.selected) {
+    background-color: #e8e8e8;
+}
+
+.datepicker-grid .week-panel-row.selected, .datepicker-grid .week-panel-row.selected:hover {
+    background-color: #3273dc;
+    color: #fff;
+    font-weight: 600;
+}
+
+.datepicker-cell:not(.disabled):not(.week-list):not(.selected):hover {
     background-color: #f9f9f9;
     cursor: pointer;
 }

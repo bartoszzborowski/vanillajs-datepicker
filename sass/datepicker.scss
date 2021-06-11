@@ -54,7 +54,7 @@ $dp-cell-shrinked-width: $dp-cell-size-base * 7 / 8;
 @import 'mixins';
 
 //== styles ==//
-.datepicker {
+.v-datepicker {
   display: none;
 
   &.active {
@@ -271,6 +271,11 @@ $dp-cell-shrinked-width: $dp-cell-size-base * 7 / 8;
     font-weight: $dp-font-weight-bold;
   }
 
+  .week-list {
+    @extend %datepicker-cell-height;
+    width: $dp-cell-size-base
+  }
+
   .week {
     @extend %datepicker-cell-height;
     width: $dp-cell-size-base;
@@ -294,12 +299,34 @@ $dp-cell-shrinked-width: $dp-cell-size-base * 7 / 8;
       width: $dp-cell-shrinked-width * 7;
     }
   }
+
+  .week-panel-row {
+    @extend %flex-container;
+
+    &:not(.disabled):not(.selected):hover {
+      background-color: darken($dp-background-color, 2.5%);
+      cursor: pointer;
+    }
+
+    &.focused:not(.selected) {
+      background-color: $dp-cell-focus-background-color;
+    }
+
+    &.selected {
+      &,
+      &:hover {
+        background-color: $dp-cell-selected-background-color;
+        color: $dp-cell-selected-color;
+        font-weight: $dp-cell-selected-font-weight;
+      }
+    }
+  }
 }
 
 .datepicker-cell {
   @extend %datepicker-cell-height;
 
-  &:not(.disabled):hover {
+  &:not(.disabled):not(.week-list):not(.selected):hover {
     background-color: darken($dp-background-color, 2.5%);
     cursor: pointer;
   }

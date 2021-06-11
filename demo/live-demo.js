@@ -87,16 +87,16 @@ const defaultOptions = {
   language: 'en',
   maxDate: null,
   maxNumberOfDates: 1,
-  maxView: 4,
+  maxView: 5,
   minDate: null,
   nextArrow: '»',
   orientation: 'auto',
-  pickLevel: 4,
+  pickLevel: 5,
   prevArrow: '«',
   showDaysOfWeek: true,
   showOnClick: true,
   showOnFocus: true,
-  startView: 0,
+  startView: 5,
   title: '',
   todayBtn: false,
   todayHighlight: false,
@@ -198,7 +198,8 @@ function getBeforeShowFnSrc(name) {
 }
 
 function switchPicker(type) {
-  const options = buttonClass ? {buttonClass} : {};
+  // const options = buttonClass ? {buttonClass} : {};
+  const options = defaultOptions;
   if (window.demoPicker) {
     const currentOpts = window.demoPicker instanceof DateRangePicker
       ? window.demoPicker.datepickers[0]._options
@@ -209,7 +210,6 @@ function switchPicker(type) {
       }
       return opts;
     }, options);
-
     window.demoPicker.destroy();
     sandbox.removeChild(sandbox.firstChild);
   }

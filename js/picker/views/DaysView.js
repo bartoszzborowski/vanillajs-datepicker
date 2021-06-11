@@ -109,7 +109,6 @@ export default class DaysView extends View {
     const viewMonth = viewDate.getMonth();
     const firstOfMonth = dateValue(viewYear, viewMonth, 1);
     const start = dayOfTheWeekOf(firstOfMonth, this.weekStart, this.weekStart);
-
     this.first = firstOfMonth;
     this.last = dateValue(viewYear, viewMonth + 1, 0);
     this.start = start;
