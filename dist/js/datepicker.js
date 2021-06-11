@@ -778,18 +778,18 @@ var Datepicker = (function () {
   }
 
   const pickerTemplate = optimizeTemplateHTML(`<div class="v-datepicker">
-  <div class="datepicker-picker">
-    <div class="datepicker-header">
-      <div class="datepicker-title"></div>
-      <div class="datepicker-controls">
+  <div class="v-datepicker-picker">
+    <div class="v-datepicker-header">
+      <div class="v-datepicker-title"></div>
+      <div class="v-datepicker-controls">
         <button type="button" class="%buttonClass% prev-btn"></button>
         <button type="button" class="%buttonClass% view-switch"></button>
         <button type="button" class="%buttonClass% next-btn"></button>
       </div>
     </div>
-    <div class="datepicker-main"></div>
+    <div class="v-datepicker-main"></div>
     <div class="datepicker-footer">
-      <div class="datepicker-controls">
+      <div class="v-datepicker-controls">
         <button type="button" class="%buttonClass% today-btn"></button>
         <button type="button" class="%buttonClass% clear-btn"></button>
       </div>

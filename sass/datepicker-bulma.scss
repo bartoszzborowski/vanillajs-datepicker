@@ -35,10 +35,9 @@ $dp-input-in-edit-border-color: darken($link, 5%) !default;
 $dp-input-in-edit-focus-box-shadow-size: 0 0 0.25em 0.25em !default;
 
 @import 'mixins';
-
 @mixin dp-button {
   .button {
-    .datepicker-header & {
+    .v-datepicker-header & {
       @include dp-header-button-common;
 
       &:hover {
@@ -60,7 +59,7 @@ $dp-input-in-edit-focus-box-shadow-size: 0 0 0.25em 0.25em !default;
       }
     }
 
-    .datepicker-footer & {
+    .v-datepicker-footer & {
       @include dp-footer-button-common;
     }
   }

@@ -78,11 +78,11 @@ $dp-input-in-edit-focus-box-shadow-size: 0 0 0.25em 0.25em !default;
       }
     }
 
-    .datepicker-header & {
+    .v-datepicker-header & {
       @include dp-header-button-common;
     }
 
-    .datepicker-footer & {
+    .v-datepicker-footer & {
       @include dp-footer-button-common;
     }
   }

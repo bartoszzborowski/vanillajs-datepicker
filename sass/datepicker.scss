@@ -75,7 +75,7 @@ $dp-cell-shrinked-width: $dp-cell-size-base * 7 / 8;
   }
 }
 
-.datepicker-picker {
+.v-datepicker-picker {
   display: inline-block;
   border-radius: $dp-border-radius;
   background-color: $dp-background-color;
@@ -96,11 +96,11 @@ $dp-cell-shrinked-width: $dp-cell-size-base * 7 / 8;
   }
 }
 
-.datepicker-main {
+.v-datepicker-main {
   padding: 2px;
 }
 
-.datepicker-footer {
+.v-datepicker-footer {
   box-shadow: inset 0 1px 1px rgba($black, 0.1);
   background-color: $dp-footer-background-color;
 }
@@ -126,7 +126,7 @@ $dp-cell-shrinked-width: $dp-cell-size-base * 7 / 8;
   line-height: $dp-cell-size-base;
 }
 
-.datepicker-title {
+.v-datepicker-title {
   box-shadow: inset 0 -1px 1px rgba($black, 0.1);
   background-color: $dp-title-background-color;
   padding: 0.375rem 0.75rem;
@@ -134,10 +134,10 @@ $dp-cell-shrinked-width: $dp-cell-size-base * 7 / 8;
   font-weight: $dp-font-weight-bold;
 }
 
-.datepicker-controls {
+.v-datepicker-controls {
   @extend %flex-container;
 
-  .datepicker-header & {
+  .v-datepicker-header & {
     padding: 2px 2px 0;
   }
 
@@ -212,7 +212,7 @@ $dp-cell-shrinked-width: $dp-cell-size-base * 7 / 8;
         cursor: not-allowed;
       }
 
-      .datepicker-header & {
+      .v-datepicker-header & {
         @include dp-header-button-common;
 
         &:hover {
@@ -234,7 +234,7 @@ $dp-cell-shrinked-width: $dp-cell-size-base * 7 / 8;
         }
       }
 
-      .datepicker-footer & {
+      .v-datepicker-footer & {
         @include dp-footer-button-common;
       }
     }
