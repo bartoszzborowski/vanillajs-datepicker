@@ -788,7 +788,7 @@ var Datepicker = (function () {
       </div>
     </div>
     <div class="v-datepicker-main"></div>
-    <div class="datepicker-footer">
+    <div class="v-datepicker-footer">
       <div class="v-datepicker-controls">
         <button type="button" class="%buttonClass% today-btn"></button>
         <button type="button" class="%buttonClass% clear-btn"></button>
